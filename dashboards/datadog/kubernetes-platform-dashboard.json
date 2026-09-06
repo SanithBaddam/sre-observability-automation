@@ -1,0 +1,62 @@
+{
+  "title": "Kubernetes Platform - SRE Overview",
+  "description": "Portfolio dashboard for cluster health, workload reliability, and saturation.",
+  "layout_type": "ordered",
+  "is_read_only": false,
+  "template_variables": [
+    {"name":"cluster","prefix":"kube_cluster_name","default":"*"},
+    {"name":"namespace","prefix":"kube_namespace","default":"*"}
+  ],
+  "widgets": [
+    {
+      "definition": {
+        "type": "query_value",
+        "title": "Running Pods",
+        "requests": [{
+          "q": "sum:kubernetes.pods.running{kube_cluster_name:$cluster,kube_namespace:$namespace}",
+          "aggregator": "last"
+        }]
+      }
+    },
+    {
+      "definition": {
+        "type": "query_value",
+        "title": "Pending Pods",
+        "requests": [{
+          "q": "sum:kubernetes.pods.pending{kube_cluster_name:$cluster,kube_namespace:$namespace}",
+          "aggregator": "last"
+        }]
+      }
+    },
+    {
+      "definition": {
+        "type": "timeseries",
+        "title": "Container CPU",
+        "requests": [{
+          "queries": [{
+            "data_source": "metrics",
+            "name": "cpu",
+            "query": "avg:kubernetes.cpu.usage.total{kube_cluster_name:$cluster,kube_namespace:$namespace} by {kube_namespace}"
+          }],
+          "response_format": "timeseries",
+          "formulas": [{"formula":"cpu"}]
+        }]
+      }
+    },
+    {
+      "definition": {
+        "type": "timeseries",
+        "title": "Container Memory",
+        "requests": [{
+          "queries": [{
+            "data_source": "metrics",
+            "name": "memory",
+            "query": "avg:kubernetes.memory.usage{kube_cluster_name:$cluster,kube_namespace:$namespace} by {kube_namespace}"
+          }],
+          "response_format": "timeseries",
+          "formulas": [{"formula":"memory"}]
+        }]
+      }
+    }
+  ]
+}
