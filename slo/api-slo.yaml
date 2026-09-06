@@ -1,0 +1,12 @@
+service: platform-api
+objective: 99.9
+window: 30d
+indicators:
+  availability:
+    good: "HTTP responses excluding 5xx"
+    total: "All HTTP responses"
+error_budget_policy:
+  fast_burn:
+    action: page
+  slow_burn:
+    action: ticket
