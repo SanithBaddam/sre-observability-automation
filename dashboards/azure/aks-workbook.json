@@ -1,0 +1,39 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# AKS Platform Health\nProduction-style Azure Monitor workbook for cluster capacity, node health, pod failures, and restart trends."
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubeNodeInventory\n| summarize Nodes=count(), Ready=countif(Status == 'Ready') by ClusterName\n| extend ReadyPercent=round(100.0 * Ready / Nodes, 2)",
+        "size": 1,
+        "title": "Node Readiness"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubePodInventory\n| summarize Pods=count(), Running=countif(PodStatus == 'Running'), Pending=countif(PodStatus == 'Pending'), Failed=countif(PodStatus == 'Failed') by ClusterName",
+        "size": 1,
+        "title": "Pod Health"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "KubePodInventory\n| summarize Restarts=sum(ContainerRestartCount) by bin(TimeGenerated, 15m), Namespace\n| render timechart",
+        "size": 0,
+        "title": "Container Restart Trend"
+      }
+    }
+  ],
+  "fallbackResourceIds": []
+}
